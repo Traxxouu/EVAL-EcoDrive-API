@@ -1,0 +1,450 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "EcoDrive API by Barbe Maël",
+        "description": "<p>API de suivi de conduite écologique permettant aux utilisateurs d'enregistrer leurs trajets en voiture et de recevoir des statistiques sur leurs conduite.</p><p>Elle vise à promouvoir une bonne conduite eco-responsable, à réduire la consommation de carburant et à limiter les émissions de CO2.</p>",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Serveur local de l'application"
+        },
+        {
+            "url": "https://api.ecodrive.example.com",
+            "description": "Site web en Ligne de l'application"
+        }
+    ],
+    "externalDocs": {
+        "description": "Documentation complèete de mon projet evalue",
+        "url": "https://github.com/Traxxouu/EVAL-EcoDrive-API"
+    },
+    "tags": [
+        {
+            "name": "Utilisateurs",
+            "description": "Opérations concernant les utilisateurs"
+        },
+        {
+            "name": "Trajets",
+            "description": "Opérations concernant les trajets"
+        },
+        {
+            "name": "Statistiques",
+            "description": "Opérations concernant les stats de conduite"
+        }
+    ],
+    "paths": {
+        "/users": {
+            "get": {
+                "tags": ["Utilisateurs"],
+                "summary": "Obtenir la liste des utilisateurs",
+                "operationId": "getUsers",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/LimitParam"
+                    },
+                    {
+                        "$ref": "#/components/parameters/OffsetParam"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Renvoie les utilisateurs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ArrayOfUsers"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Erreur 404 Il n'y a pas d'utilisateurs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "code": 404,
+                                    "message": "Aucun utilisateur trouvé"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Utilisateurs"],
+                "summary": "Créer un nouvel utilisateur",
+                "operationId": "createUser",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserPost"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur 400 Données invalide",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "code": 400,
+                                    "message": "Email ou nom d'utilisateur invalide"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": ["Utilisateurs"],
+                "summary": "Obtenir un utilisateur par ID",
+                "operationId": "getUserById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID de l'utilisateur",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Renvoie les détails d'un utilisateur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Utilisateur non trouvé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "code": 404,
+                                    "message": "Utilisateur non trouvé"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/stats": {
+            "get": {
+                "tags": ["Statistiques"],
+                "summary": "Obtenir les statistiques d'un utilisateur",
+                "operationId": "getUserStats",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID de l'utilisateur",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Renvoie les statistiques de conduite d'un utilisateur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Stats"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Utilisateur non trouvé ou aucune statistique disponible",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "code": 404,
+                                    "message": "Aucune statistique disponible pour cet utilisateur"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/trips": {
+            "post": {
+                "tags": ["Trajets"],
+                "summary": "Démarrer un nouveau trajet",
+                "operationId": "createTrip",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TripPost"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Trajet créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Trip"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Données invalides",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "code": 400,
+                                    "message": "Données du trajet invalides"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/trips/{id}": {
+            "get": {
+                "tags": ["Trajets"],
+                "summary": "Obtenir les informations d'un trajet",
+                "operationId": "getTripById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID du trajet",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Renvoie les détails d'un trajet",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Trip"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Trajet non trouvé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                },
+                                "example": {
+                                    "code": 404,
+                                    "message": "Trajet non trouvé"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "Traxxouu"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "mael.barbe@efrei.net"
+                    }
+                }
+            },
+            "UserPost": {
+                "type": "object",
+                "required": ["username", "email"],
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "Traxxouu"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "mael.barbe@efrei.net"
+                    }
+                }
+            },
+            "ArrayOfUsers": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/User"
+                },
+                "example": [
+                    {
+                        "id": 1,
+                        "username": "Traxxouu",
+                        "email": "mael.barbe@efrei.net"
+                    }
+
+                ]
+            },
+            "Trip": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "userId": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "distance_km": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 12.5
+                    },
+                    "score": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "example": 87
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-04-18"
+                    }
+                }
+            },
+            "TripPost": {
+                "type": "object",
+                "required": ["userId", "distance_km"],
+                "properties": {
+                    "userId": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "distance_km": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 12.5
+                    },
+                    "score": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "example": 87
+                    }
+                }
+            },
+            "Stats": {
+                "type": "object",
+                "properties": {
+                    "total_trips": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "total_distance": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 78.2
+                    },
+                    "average_score": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 82
+                    }
+                }
+            },
+            "ErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "example": 404
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Ressource non trouvée"
+                    }
+                }
+            }
+        },
+        "parameters": {
+            "LimitParam": {
+                "name": "limit",
+                "in": "query",
+                "description": "Nombre d'éléments à renvoyer",
+                "required": false,
+                "schema": {
+                    "type": "integer",
+                    "default": 10
+                }
+            },
+            "OffsetParam": {
+                "name": "offset",
+                "in": "query",
+                "description": "Nombre d'éléments à ignorer au début de la liste",
+                "required": false,
+                "schema": {
+                    "type": "integer",
+                    "default": 0
+                }
+            }
+        }
+    }
+}
