@@ -16,7 +16,7 @@
 **EcoDrive** est une API qui permet aux utilisateurs d'enregistrer leurs trajets en voiture et de recevoir des informations sur leurs conduites. Elle vise à promouvoir une conduite eco responsable, a réduire la consommation de carburant et à limiter les émissions de CO2.
 
 <div>
-  <img src="public/pollution.png" width=500px>
+  <img src="/EcoDrive-API/public/pollution.png" width=500px>
 </div>
 
 ## Fonctionnalités
